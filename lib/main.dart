@@ -87,7 +87,7 @@ class MainPage extends StatelessWidget {
         pinned: true,
     floating: true,
     forceElevated: innerBoxIsScrolled,
-    title: Text("Hare Krishna"),
+    title: Text("Driver Test"),
     elevation: 4.0,
     backgroundColor: Color(0xffb71c1c),
     bottom: TabBar(
