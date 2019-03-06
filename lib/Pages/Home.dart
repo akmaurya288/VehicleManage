@@ -21,9 +21,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-          color: Colors.white
-      ),
+      color: Colors.red[50],
       child: StaggeredGridView.count(
           crossAxisCount: 2, crossAxisSpacing: 6.0, mainAxisSpacing: 6.0, padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 6.0),
         children: <Widget>[

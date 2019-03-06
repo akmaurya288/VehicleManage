@@ -15,7 +15,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="Car"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/launcher_splash_screen_round">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
