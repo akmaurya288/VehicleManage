@@ -5,10 +5,10 @@ import 'Pages/Profit.dart';
 import 'Pages/Insurance.dart';
 import 'Screen/backup.dart';
 import 'Screen/settings.dart';
-import 'Add/AddCar.dart';
-import 'Add/AddDriver.dart';
-import 'Add/AddFuel.dart';
-import 'Add/AddIncome.dart';
+import 'Screen/AddCar.dart';
+import 'Screen/AddDriver.dart';
+import 'Pages/Car.dart';
+import 'package:flutter_app/DataBase/DriverModel.dart';
 void main()=> runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
 class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(length: 4, child: Scaffold(
+    return DefaultTabController(length: 5, child: Scaffold(
       body: NestedScrollView(headerSliverBuilder: (BuildContext context,bool innerBoxIsScrolled){
         return <Widget>[
           SliverAppBar(
@@ -39,17 +39,19 @@ class MainPage extends StatelessWidget {
     tabs: [
     Tab(icon: Image.asset('lib/Icon/IconHome.png', scale: 45),
     text: 'Home',),
-    Tab(icon: Image.asset('lib/Icon/IconInsurance.png', scale: 45),
-    text: 'Insurance',),
+    Tab(icon: Image.asset('lib/Icon/IconCar.png', scale: 45),
+      text: 'Vehicle',),
     Tab(icon: Image.asset('lib/Icon/IconUser.png', scale: 45),
     text: 'Driver',),
+    Tab(icon: Image.asset('lib/Icon/IconInsurance.png', scale: 45),
+      text: 'Insurance',),
     Tab(icon: Image.asset('lib/Icon/IconProfit.png', scale: 45),
     text: 'Profit',),
     ]),
     )
         ];
     }, body: TabBarView(
-        children: [Home(), TodoList(), Driver(), Profit()],
+        children: [Home(), Car(), Driver(),TodoList(), Profit()],
       ),
       ),
       drawer: Drawer(
@@ -68,35 +70,14 @@ class MainPage extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 title: Text(
-                  'Income',
-                  style: TextStyle(fontSize: 18.0),
-                ),
-                leading: Icon(null),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddIncome()));
-                },
-              ),
-              ListTile(
-                title: Text(
-                  'Fuel',
-                  style: TextStyle(fontSize: 18.0),
-                ),
-                leading: Icon(null),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddFuel()));
-                },
-              ),
-              ListTile(
-                title: Text(
                   'Driver',
                   style: TextStyle(fontSize: 18.0),
                 ),
                 leading: Icon(null),
                 onTap: () {
                   Navigator.pop(context);
-//                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddDriver(todo)));
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context) => AddDriver(DriverDB('', 0, '', '', '', '', 0, ''),'Add Driver')));
                 },
               ),
               ListTile(
