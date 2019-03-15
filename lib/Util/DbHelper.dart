@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_app/DataBase/DriverModel.dart';
 
+
 class DatabaseHelper {
   static DatabaseHelper _databaseHelper;
   static Database _database;
@@ -16,6 +17,8 @@ class DatabaseHelper {
   String colmed = 'medical';
   String colmob = 'mobno';
   String colexp = 'exp';
+  String colexpiry='expiry';
+  String colleave='leave';
 
   DatabaseHelper._createInstance(); // Named constructor to create instance of DatabaseHelper
 
@@ -47,8 +50,9 @@ class DatabaseHelper {
 
   void _createDb(Database db, int newVersion) async {
 
-    await db.execute('CREATE TABLE $noteTable($coldid INTEGER PRIMARY KEY AUTOINCREMENT,$colname TEXT, $coladd TEXT,'
-        ' $colexp INTEGER, $colmed TEXT, $colPov TEXT, $colmob INTEGER)');
+    await db.execute('CREATE TABLE $noteTable($coldid INTEGER  KEY AUTOINCREMENT,$colname TEXT, $coladd TEXT,'
+        ' $colexp INTEGER, $colmed TEXT, $colPov TEXT, $colmob INTEGER,$colexpiry TEXT,$colleave TEXT)');
+
   }
 
   Future<List<Map<String, dynamic>>> getNoteMapList() async {
@@ -91,7 +95,5 @@ class DatabaseHelper {
     }
     return noteList;
   }
-}
 
-
-
+  }

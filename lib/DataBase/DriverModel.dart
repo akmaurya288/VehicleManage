@@ -9,9 +9,14 @@ class DriverDB{
   String _policeVeri;
   int _exp;
   String _date;
+  String _expiry;
+  String _leave;
 
-  DriverDB(this._driverName,this._mobno,this._address,this._vehicalID,this._med,this._policeVeri,this._exp,this._date);
-  DriverDB.withID(this._driverID,this._mobno,this._driverName,this._address,this._vehicalID,this._med,this._policeVeri,this._exp,this._date);
+
+
+  DriverDB(this._driverName,this._mobno,this._address,this._vehicalID,this._med,this._policeVeri,this._exp,this._date,this._expiry,this._leave);
+  DriverDB.withID(this._driverID,this._mobno,this._driverName,this._address,this._vehicalID,this._med,this._policeVeri,this._exp,this._date,this._expiry
+      ,this._leave);
 
   String get driverName =>_driverName;
   int get driverID =>_driverID;
@@ -22,6 +27,9 @@ class DriverDB{
   int get mobno=>_mobno;
   int get exp=>_exp;
   String get date => _date;
+  String get expiry => _expiry;
+  String get leave => _leave;
+
 
   set date(String newDate) {
     _date = newDate;
@@ -56,6 +64,16 @@ class DriverDB{
       this._med=newmedical;
     }
   }
+  set leave(String newleave){
+    if(newleave.length>0){
+      this._med=newleave;
+    }
+  }
+  set expiry(String newexpiry){
+    if(newexpiry.length>0){
+      this._expiry=newexpiry;
+    }
+  }
   set mobno(int newMobno){
     if(newMobno>0&&newMobno<11){
       this._mobno=newMobno;
@@ -78,6 +96,8 @@ class DriverDB{
     map['medical']=_med;
     map['policeVeri']=_policeVeri;
     map['address']=_address;
+    map['expiry']=_expiry;
+    map['leave']=_leave;
     return map;
   }
   DriverDB.fromMapObject(dynamic map){
@@ -88,5 +108,12 @@ class DriverDB{
     this._med=map['medical'];
     this._policeVeri=map['policeVeri'];
     this._address=map['address'];
+    this._expiry=map['expiry'];
+    this._leave=map['leave'];
   }
+
+
+
+
+
 }

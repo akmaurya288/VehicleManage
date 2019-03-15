@@ -26,7 +26,8 @@ dependencies:
   folding_cell: "^0.1.0"
   sqflite: any
   path_provider: any
-  intl: ^0.15.7
+  intl: "^0.15.7"
+  image_picker: "^0.4.5"
 
 dev_dependencies:
   flutter_test:

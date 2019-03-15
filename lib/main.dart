@@ -77,7 +77,7 @@ class MainPage extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => AddDriver(DriverDB('', 0, '', '', '', '', 0, ''),'Add Driver')));
+                      builder: (context) => AddDriver(DriverDB('', 0, '', '', '', '', 0, '', '', ''),'Add Driver',true)));
                 },
               ),
               ListTile(

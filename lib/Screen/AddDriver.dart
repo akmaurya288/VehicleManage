@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
 import 'package:flutter_app/DataBase/DriverModel.dart';
 import 'package:flutter_app/Util/DbHelper.dart';
-import 'package:flutter_app/Pages/Driver.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddDriver extends StatefulWidget {
   final String appBarTitle;
   final DriverDB driverDB;
-  AddDriver(this.driverDB,this.appBarTitle);
+  final bool edit;
+  AddDriver(this.driverDB,this.appBarTitle,this.edit);
 
   @override
-  _AddDriverState createState() => _AddDriverState(this.driverDB, this.appBarTitle);
+  _AddDriverState createState() => _AddDriverState(this.driverDB, this.appBarTitle, this.edit);
 }
 
 class _AddDriverState extends State<AddDriver> {
 
   DatabaseHelper helper= DatabaseHelper();
-
+  File _image;
   String appBarTitle;
   DriverDB driverDB;
-  _AddDriverState(this.driverDB, this.appBarTitle);
-
+  bool edit=false;
+  _AddDriverState(this.driverDB, this.appBarTitle, this.edit);
   TextEditingController nameController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
   TextEditingController addressController = TextEditingController();
+  TextEditingController expiryController = TextEditingController();
+  TextEditingController leaveController = TextEditingController();
+  TextEditingController experienceController = TextEditingController();
   TextEditingController medicalController = TextEditingController();
   TextEditingController policeController = TextEditingController();
 
@@ -35,7 +40,23 @@ class _AddDriverState extends State<AddDriver> {
         child:Scaffold(
           appBar: AppBar(
             title: Text(appBarTitle),
-
+           actions: <Widget>[
+             IconButton(icon: Icon(Icons.delete_forever),
+                 tooltip: 'Delete',
+                 onPressed: _delete),
+             IconButton(
+               icon: Icon(Icons.edit),
+               tooltip: 'Edit',
+               onPressed:()=> setState(() {
+                 edit=true;
+               }),
+             ),
+             IconButton(
+               icon: Icon(Icons.save),
+               tooltip: 'Save',
+               onPressed:_save
+             )
+           ],
           ),
           body: Padding(padding: EdgeInsets.only(top:15.0, left:10.0, right:10.0),
               child: ListView(
@@ -43,75 +64,154 @@ class _AddDriverState extends State<AddDriver> {
                   Padding(
                     padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
                     child: TextField(
+                      enabled: edit,
                       controller: nameController,
                       onChanged: (value) {
                         debugPrint('Something changed in Title Text Field');
                         updateTitle();
                       },
                       decoration: InputDecoration(
-                          labelText: 'Title',
+                          labelText: 'Driver Name',
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(5.0)
                           )
                       ),
                     ),
                   ),
-
-                  // Fourth Element
                   Padding(
                     padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: RaisedButton(
-                            color: Theme.of(context).primaryColorDark,
-                            textColor: Theme.of(context).primaryColorLight,
-                            child: Text(
-                              'Save',
-                              textScaleFactor: 1.5,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                debugPrint("Save button clicked");
-                                _save();
-                              });
-                            },
-                          ),
-                        ),
-
-                        Container(width: 5.0,),
-
-                        Expanded(
-                          child: RaisedButton(
-                            color: Theme.of(context).primaryColorDark,
-                            textColor: Theme.of(context).primaryColorLight,
-                            child: Text(
-                              'Delete',
-                              textScaleFactor: 1.5,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                debugPrint("Delete button clicked");
-                                _delete();
-                              });
-                            },
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      enabled: edit,
+                      controller: mobileController,
+                      keyboardType: TextInputType.numberWithOptions(decimal: false),
+                      onChanged: (value) {
+                        debugPrint('Something changed in Title Text Field');
+                        updateTitle();
+                      },
+                      decoration: InputDecoration(
+                          labelText: 'Contact Mobile Number',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0)
+                          )
+                      ),
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                    child: TextField(
+                      enabled: edit,
+                      controller: addressController,
+                      onChanged: (value) {
+                        debugPrint('Something changed in Title Text Field');
+                        updateTitle();
+                      },
+                      decoration: InputDecoration(
+                          labelText: 'Address',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0)
+                          )
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                    child: TextField(
+                      enabled: edit,
+                      controller: expiryController,
+                      onChanged: (value) {
+                        debugPrint('Something changed in Title Text Field');
+                        updateTitle();
+                      },
+                      decoration: InputDecoration(
+                          labelText: 'Licence Expiry',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0)
+                          )
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                    child: TextField(
+                      enabled: edit,
+                      controller: experienceController,
+                      keyboardType: TextInputType.numberWithOptions(decimal: false),
+                      onChanged: (value) {
+                        debugPrint('Something changed in Title Text Field');
+                        updateTitle();
+                      },
+                      decoration: InputDecoration(
+                          labelText: 'Experience',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0)
+                          )
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                    child: TextField(
+                      enabled: edit,
+                      controller: leaveController,
+                      onChanged: (value) {
+                        debugPrint('Something changed in Title Text Field');
+                        updateTitle();
+                      },
+                      decoration: InputDecoration(
+                          labelText: 'Leave',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0)
+                          )
+                      ),
+                    ),
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Center(
+                        child: _image==null ? Text("Select Image"):Image.file(_image),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          RaisedButton(
+                          child: Icon(Icons.image),
+                          onPressed: getImageGallery
+                          ),
+                          RaisedButton(
+                            child: Icon(Icons.camera),
+                            onPressed: getImageCamera,
+                          )
+
+                        ],
+                      )
+                    ],
+                  )
                 ],
           ),
           ),
         )
     );
   }
+  Future getImageGallery()async{
+    var imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _image=imageFile;
+    });
+  }
+  Future getImageCamera()async{
+    var imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+    setState(() {
+      _image=imageFile;
+    });
+  }
 
   void updateTitle(){
     driverDB.driverName = nameController.text;
     driverDB.mobno = mobileController.text as int;
     driverDB.adders = addressController.text;
+    driverDB.exp = experienceController as int;
+    driverDB.expiry = expiryController.text;
     driverDB.medical = medicalController.text;
+    driverDB.leave = leaveController.text;
     driverDB.policeVeri = policeController.text;
   }
   // Save data to database
@@ -135,7 +235,7 @@ class _AddDriverState extends State<AddDriver> {
   }
 
   void moveToLastScreen() {
-    Navigator.pop(context);
+    Navigator.pop(context,true);
   }
 
   void _delete() async {
