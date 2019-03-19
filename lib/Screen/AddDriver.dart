@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'dart:async';
 import 'package:flutter_app/DataBase/DriverModel.dart';
 import 'package:flutter_app/Util/DbHelper.dart';
-import 'package:image_picker/image_picker.dart';
 
 class AddDriver extends StatefulWidget {
   final String appBarTitle;
@@ -18,7 +19,7 @@ class AddDriver extends StatefulWidget {
 class _AddDriverState extends State<AddDriver> {
 
   DatabaseHelper helper= DatabaseHelper();
-  File _image;
+  File _licenceimage;
   String appBarTitle;
   DriverDB driverDB;
   bool edit=false;
@@ -31,6 +32,13 @@ class _AddDriverState extends State<AddDriver> {
   TextEditingController experienceController = TextEditingController();
   TextEditingController medicalController = TextEditingController();
   TextEditingController policeController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    checkEmpty();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,10 +91,12 @@ class _AddDriverState extends State<AddDriver> {
                     child: TextField(
                       enabled: edit,
                       controller: mobileController,
-                      keyboardType: TextInputType.numberWithOptions(decimal: false),
+                      keyboardType: TextInputType.numberWithOptions(decimal:false),
                       onChanged: (value) {
-                        debugPrint('Something changed in Title Text Field');
-                        updateTitle();
+                        debugPrint('Something changed in Title Text Field' + value);
+                        setState(() {
+                          updateTitle();
+                        });
                       },
                       decoration: InputDecoration(
                           labelText: 'Contact Mobile Number',
@@ -137,8 +147,10 @@ class _AddDriverState extends State<AddDriver> {
                       controller: experienceController,
                       keyboardType: TextInputType.numberWithOptions(decimal: false),
                       onChanged: (value) {
-                        debugPrint('Something changed in Title Text Field');
+                        debugPrint('Something changed in Title Text Field'+value);
                         updateTitle();
+
+
                       },
                       decoration: InputDecoration(
                           labelText: 'Experience',
@@ -168,7 +180,7 @@ class _AddDriverState extends State<AddDriver> {
                   Column(
                     children: <Widget>[
                       Center(
-                        child: _image==null ? Text("Select Image"):Image.file(_image),
+                        child: _licenceimage==null ? Text("Select Image"):Image.file(_licenceimage),
                       ),
                       Row(
                         children: <Widget>[
@@ -194,36 +206,49 @@ class _AddDriverState extends State<AddDriver> {
   Future getImageGallery()async{
     var imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
-      _image=imageFile;
+      _licenceimage=imageFile;
     });
   }
   Future getImageCamera()async{
     var imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
     setState(() {
-      _image=imageFile;
+      _licenceimage=imageFile;
     });
   }
 
+  void checkEmpty(){
+    if(driverDB.driverID!=null){
+      nameController.text = driverDB.driverName;
+      addressController.text = driverDB.adders;
+      expiryController.text = driverDB.expiry;
+      medicalController.text = driverDB.medical;
+      leaveController.text = driverDB.leave;
+      policeController.text = driverDB.policeVeri;
+      mobileController.text=driverDB.mobno.toString();
+      experienceController.text=driverDB.exp.toString();
+
+    }
+  }
   void updateTitle(){
     driverDB.driverName = nameController.text;
-    driverDB.mobno = mobileController.text as int;
     driverDB.adders = addressController.text;
-    driverDB.exp = experienceController as int;
     driverDB.expiry = expiryController.text;
     driverDB.medical = medicalController.text;
     driverDB.leave = leaveController.text;
-    driverDB.policeVeri = policeController.text;
+    driverDB.mobno=int.parse(mobileController.text);
+    driverDB.exp=int.parse(experienceController.text);
+
   }
   // Save data to database
   void _save() async {
     moveToLastScreen();
     driverDB.date = DateFormat.yMMMd().format(DateTime.now());
     int result;
-    debugPrint(result.toString());
     if (driverDB.driverID != null) {  // Case 1: Update operation
-      result = await helper.updateNote(driverDB);
+      debugPrint(driverDB.driverID.toString());
+      result = await helper.updateDriverNote(driverDB);
     } else { // Case 2: Insert Operation
-      result = await helper.insertNote(driverDB);
+      result = await helper.insertDriverNote(driverDB);
     }
 
     if (result != 0) {  // Success
@@ -231,6 +256,8 @@ class _AddDriverState extends State<AddDriver> {
     } else {  // Failure
       _showAlertDialog('Status', 'Problem Saving Note');
     }
+
+    debugPrint(result.toString());
 
   }
 
@@ -249,7 +276,7 @@ class _AddDriverState extends State<AddDriver> {
     }
 
     // Case 2: User is trying to delete the old note that already has a valid ID.
-    int result = await helper.deleteNote(driverDB.driverID);
+    int result = await helper.deleteDriverNote(driverDB.driverID);
     if (result != 0) {
       _showAlertDialog('Status', 'Note Deleted Successfully');
     } else {

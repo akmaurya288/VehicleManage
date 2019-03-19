@@ -5,9 +5,9 @@ import 'Pages/Profit.dart';
 import 'Pages/Insurance.dart';
 import 'Screen/backup.dart';
 import 'Screen/settings.dart';
-import 'Screen/AddCar.dart';
+import 'Screen/AddVehicle.dart';
 import 'Screen/AddDriver.dart';
-import 'Pages/Car.dart';
+import 'Pages/Vehicle.dart';
 import 'package:flutter_app/DataBase/DriverModel.dart';
 void main()=> runApp(MyApp());
 
@@ -51,7 +51,7 @@ class MainPage extends StatelessWidget {
     )
         ];
     }, body: TabBarView(
-        children: [Home(), Car(), Driver(),TodoList(), Profit()],
+        children: [Home(), Vehicle(), Driver(),TodoList(), Profit()],
       ),
       ),
       drawer: Drawer(
@@ -77,7 +77,7 @@ class MainPage extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => AddDriver(DriverDB('', 0, '', '', '', '', 0, '', '', ''),'Add Driver',true)));
+                      builder: (context) => AddDriver(DriverDB(0,'','',0,'','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true)));
                 },
               ),
               ListTile(
@@ -88,7 +88,8 @@ class MainPage extends StatelessWidget {
                 leading: Icon(null),
                 onTap: (){
                   Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddCar()));
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context) => AddVehicle(DriverDB(0,'','',0,'','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true)));
                 },
               ),
             ],

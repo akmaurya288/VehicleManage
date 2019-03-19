@@ -5,20 +5,50 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_app/DataBase/DriverModel.dart';
 
 
+
 class DatabaseHelper {
   static DatabaseHelper _databaseHelper;
   static Database _database;
   String noteTable='note_table';
-  String coldid = 'driverID';
+  String coldId = 'driverID';
   String colname = 'driverName';
   String coladd= 'address';
-  String colvid = 'vehicalID';
+  String colvid = 'vehicleID';
   String colPov = 'policeVeri';
   String colmed = 'medical';
   String colmob = 'mobno';
   String colexp = 'exp';
   String colexpiry='expiry';
   String colleave='leave';
+  //vehical
+  String vehicleTable='vehicle_table';
+  String vcolplate='plateno';
+  String vcoltype='type';
+  String vcoldisCovered='distanceCovered';
+  String vcollastFilledDate='lastFilleDate';
+  String vcolavg='average';
+  String vcolfuelCost='fuelCost';
+  String vcolinCost='insuranceCost';
+  String vcolinscompany='insuranceCompany';
+  String vcolinsDueDate='insuranceDueDate';
+  String vcolserviceType='serviceType';
+  String vcolserviceCost='serviceCost';
+  String vcolserviceDate='serviceDate';
+  String vcolserviceWhat='serviceWhat';
+  String vcolserviceWhere='serviceWhere';
+  String vcolfitCost='fitnessCost';
+  String vcolfitLast='fitnesslast';
+  String vcolfitNextDate='fitnessNextDate';
+  String vcolpollCost='pollutionCost';
+  String vcolpollLast='pollutionlast';
+  String vcolpollNextDate='pollutionNextDate';
+  String vcoltaxCost='taxCost';
+  String vcoltaxWhy='taxWhy';
+  String vcoltaxDate='taxDate';
+  String vcoltaxNextDate='taxNextDate';
+  String vcoltaxtype='taxType';
+
+
 
   DatabaseHelper._createInstance(); // Named constructor to create instance of DatabaseHelper
 
@@ -50,33 +80,69 @@ class DatabaseHelper {
 
   void _createDb(Database db, int newVersion) async {
 
-    await db.execute('CREATE TABLE $noteTable($coldid INTEGER  KEY AUTOINCREMENT,$colname TEXT, $coladd TEXT,'
-        ' $colexp INTEGER, $colmed TEXT, $colPov TEXT, $colmob INTEGER,$colexpiry TEXT,$colleave TEXT)');
-
+    await db.execute('CREATE TABLE $noteTable($coldId INTEGER PRIMARY KEY, $colvid INTEGER,$colname TEXT, $coladd TEXT,'
+        ' $colexp INTEGER, $colmed TEXT, $colPov TEXT, $colmob INTEGER, $colexpiry TEXT, $colleave TEXT)');
+    
+    await db.execute('CREATE TABLE $vehicleTable($colvid INTEGER PRIMARY KEY,$vcolplate INTEGER,$vcolavg INTEGER,$vcoldisCovered INTEGER,'
+    '$vcolfitCost INTEGER,$vcolfitLast TEXT,$vcolfitNextDate TEXT,$vcolfuelCost INTEGER,$vcolinCost INTEGER,'
+    '$vcolinscompany TEXT,$vcolinsDueDate TEXT,$vcolserviceCost INTEGER,$vcolserviceDate TEXT,$vcolserviceType TEXT'
+    '$vcolserviceWhat TEXT,$vcolserviceWhere TEXT,$vcolpollCost INTEGER,$vcolpollLast TEXT,$vcolpollNextDate TEXT'
+    '$vcoltaxCost INTEGER,$vcoltaxDate TEXT,$vcoltaxNextDate TEXT,$vcoltaxtype TEXT,$vcoltaxWhy TEXT,'
+    'FOREIGN KEY($colvid)REFERENCES $noteTable($colvid))');
   }
 
-  Future<List<Map<String, dynamic>>> getNoteMapList() async {
+  Future<List<Map<String, dynamic>>> getDriverMapList() async {
 
     Database db = await this.database;
-    var result = await db.rawQuery('SELECT * FROM $noteTable order by $coldid ASC');
+    var result = await db.rawQuery('SELECT * FROM $noteTable order by $coldId ASC');
+    return result;
+  }
+  //vehical
+  Future<List<Map<String, dynamic>>> getVehicleMapList() async {
+
+    Database db = await this.database;
+    var result = await db.rawQuery('SELECT * FROM $vehicleTable order by $colvid ASC');
+    return result;
+  }
+  Future<List<Map<String, dynamic>>> getVehiclePlateMapList() async {
+
+    Database db = await this.database;
+    var result = await db.rawQuery('SELECT $vcolplate,$colvid FROM $vehicleTable order by $colvid ASC');
     return result;
   }
   // Insert
-  Future<int> insertNote(DriverDB note) async {
+  Future<int> insertDriverNote(DriverDB note) async {
     Database db = await this.database;
-    var result = await db.insert(noteTable, note.toMap());
+    var result = await db.insert(noteTable, note.toDriverMap());
+    return result;
+  }
+   // vehicalInsert
+  Future<int> insertvehicleNote(DriverDB note) async {
+    Database db = await this.database;
+    var result = await db.insert(vehicleTable, note.toVehicleMap());
     return result;
   }
   // Update
-  Future<int> updateNote(DriverDB note) async {
+  Future<int> updateDriverNote(DriverDB note) async {
     var db = await this.database;
-    var result = await db.update(noteTable, note.toMap(), where: '$coldid = ?', whereArgs: [note.driverID]);
+    var result = await db.update(noteTable, note.toDriverMap(), where: '$coldId= ?', whereArgs: [note.driverID]);
+    return result;
+  }
+  Future<int> updatevehicleNote(DriverDB note) async {
+    var db = await this.database;
+    var result = await db.update(vehicleTable, note.toVehicleMap(), where: '$colvid= ?', whereArgs: [note.driverID]);
     return result;
   }
   // Delete
-  Future<int> deleteNote(int id) async {
+  Future<int> deleteDriverNote(int id) async {
     var db = await this.database;
-    int result = await db.rawDelete('DELETE FROM $noteTable WHERE $coldid= $id');
+    int result = await db.rawDelete('DELETE FROM $noteTable WHERE $coldId= $id');
+    return result;
+  }
+  // Delete vehical
+  Future<int> deletevehicalNote(int id) async {
+    var db = await this.database;
+    int result = await db.rawDelete('DELETE FROM $vehicleTable WHERE $colvid= $id');
     return result;
   }
   // Future<int> getCount() async {
@@ -86,14 +152,15 @@ class DatabaseHelper {
   // 	return result;
   // }
   Future<List<DriverDB>> getNoteList() async {
-    var noteMapList = await getNoteMapList();
+    var noteMapList = await getDriverMapList();
     int count = noteMapList.length;
     List<DriverDB> noteList = List<DriverDB>();
     // For loop to create a 'Note List' from a 'Map List'
     for (int i = 0; i < count; i++) {
-      noteList.add(DriverDB.fromMapObject(noteMapList[i]));
+      noteList.add(DriverDB.fromDriverMapObject(noteMapList[i]));
     }
     return noteList;
   }
 
+  
   }

@@ -13,6 +13,8 @@ class _DriverState extends State<Driver> {
   DatabaseHelper helper = DatabaseHelper();
   List<DriverDB> model;
   int count = 0;
+  final _vehicles=["zxcvbn", "asdfgh", "qwerty"];
+  String _vehicle="qwerty";
 
   @override
   Widget build(BuildContext context) {
@@ -69,13 +71,34 @@ class _DriverState extends State<Driver> {
                       Row(
                         children: <Widget>[
                           Text("Phone No.:",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-                          Text("9876543210",style: TextStyle(fontSize: 20),),
+                          Text(this.model[index].mobno.toString(),style: TextStyle(fontSize: 20),),
                         ],
                       ),
                       Row(
                         children: <Widget>[
                           Text("Vehicle ID:",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-                          Text("9876543210",style: TextStyle(fontSize: 20),),
+                          Text(this.model[index].driverID.toString(),style: TextStyle(fontSize: 20),),
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                              padding: EdgeInsets.only(right: 10),
+                              child: Text("Vehicle",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),)),
+                          DropdownButton<String>(
+                            items: _vehicles.map((String value){
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            value: _vehicle,
+                            onChanged: (String value){
+                              setState(() {
+                                _vehicle=value;
+                              });
+                            },
+                          )
                         ],
                       )
                     ],
@@ -90,31 +113,16 @@ class _DriverState extends State<Driver> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed:()=>navigateToDetail(DriverDB('', 0, '', '', '', '', 0, '', '', ''),'Add Driver',true),
+          onPressed:()=>navigateToDetail(DriverDB(0,'','',0,'','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true),
         backgroundColor: Colors.redAccent,
         tooltip: "Add new Todo",
         child: new Icon(Icons.add,color: Colors.white,),
       ),
     );
   }
-  Container  innerBottomWidget(model,index) {
-    return Container(
-        decoration: BoxDecoration(
-            color: Color.fromARGB(100, 255, 222, 172),
-            border: Border.all(width: 1,color: Colors.grey),
-            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(50.0))
-        ),
-      child: Stack(
-        overflow: Overflow.visible,
-        children: <Widget>[
-          Positioned(child: IconButton(icon: Icon(Icons.delete), onPressed: ()=>_delete(context,model[index])))
-        ],
-      )
-    );
-  }
   void _delete(BuildContext context, DriverDB driverDB) async {
 
-    int result = await helper.deleteNote(driverDB.driverID);
+    int result = await helper.deleteDriverNote(driverDB.driverID);
     if (result != 0) {
       _showSnackBar(context, 'Note Deleted Successfully');
       updateListView();
@@ -136,10 +144,8 @@ class _DriverState extends State<Driver> {
   }
 
   void updateListView() {
-
     final Future<Database> dbFuture = helper.initializeDatabase();
     dbFuture.then((database) {
-
       Future<List<DriverDB>> noteListFuture = helper.getNoteList();
       noteListFuture.then((model) {
         setState(() {
