@@ -2,11 +2,13 @@ class DriverDB{
 
   int _driverID;
   String _driverName;
+  String _driverImage;
   int _mobno;
   String _address;
   int _vehicleID;
   String _med;
   String _policeVeri;
+  String _licence;
   int _exp;
   String _date;
   String _expiry;
@@ -40,13 +42,13 @@ class DriverDB{
 
 
 
-  DriverDB(this._mobno,this._driverName,this._address,this._vehicleID,this._med,this._policeVeri,this._exp,this._date,this._expiry
+  DriverDB(this._mobno,this._driverName,this._driverImage,this._address,this._vehicleID,this._med,this._policeVeri,this._licence,this._exp,this._date,this._expiry
       ,this._leave,this._plateno,this._type,this._distanceCovered,this._lastFilledDate,this._average,this._fuelCost,
       this._insuranceCost,this._insurancecompany,this._insuranceDuedate,this._serviceType,this._serviceCost,
       this._serviceDate,this._serviceWhat,this._serviceWhere,this._fitnessCost,this._fitnesslast,this._fitnessNextDate,
       this._pollutionCost,this._pollutionlast,this._pollutionNextDate,this._taxCost,this._taxDate,this._taxNextdate,
       this._taxType,this._taxWhy);
-  DriverDB.withID(this._driverID,this._mobno,this._driverName,this._address,this._vehicleID,this._med,this._policeVeri,this._exp,this._date,this._expiry
+  DriverDB.withID(this._driverID,this._mobno,this._driverName,this._driverImage,this._address,this._vehicleID,this._med,this._policeVeri,this._licence,this._exp,this._date,this._expiry
       ,this._leave,this._plateno,this._type,this._distanceCovered,this._lastFilledDate,this._average,this._fuelCost,
   this._insuranceCost,this._insurancecompany,this._insuranceDuedate,this._serviceType,this._serviceCost,
   this._serviceDate,this._serviceWhat,this._serviceWhere,this._fitnessCost,this._fitnesslast,this._fitnessNextDate,
@@ -54,10 +56,12 @@ class DriverDB{
   this._taxType,this._taxWhy);
 
   String get driverName =>_driverName;
+  String get driverImage =>_driverImage;
   int get driverID =>_driverID;
   String get adders =>_address;
   int get vehicleID =>_vehicleID;
   String get policeVeri =>_policeVeri;
+  String get licence => _licence;
   String get medical =>_med;
   int get mobno=>_mobno;
   int get exp=>_exp;
@@ -100,6 +104,11 @@ class DriverDB{
       this._driverName=newID;
     }
   }
+  set driverImage(String newID){
+    if(newID.length>0){
+      this._driverImage=newID;
+    }
+  }
   set driverID(int newID){
     if(newID>0){
       this._driverID=newID;
@@ -118,6 +127,11 @@ class DriverDB{
   set policeVeri(String newPoliceVeri){
     if(newPoliceVeri.length>0){
       this._policeVeri=newPoliceVeri;
+    }
+  }
+  set licence(String newPoliceVeri){
+    if(newPoliceVeri.length>0){
+      this._licence=newPoliceVeri;
     }
   }
   set medical(String newmedical){
@@ -276,11 +290,13 @@ class DriverDB{
       map['driverID'] = _driverID;
     }
     map['driverName']=_driverName;
+    map['driverImage']=_driverImage;
     map['driverID']=_driverID;
     map['exp']=_exp;
     map['mobno']=_mobno;
     map['medical']=_med;
     map['policeVeri']=_policeVeri;
+    map['licence']=_licence;
     map['address']=_address;
     map['expiry']=_expiry;
     map['leave']=_leave;
@@ -292,11 +308,13 @@ class DriverDB{
   }
   DriverDB.fromDriverMapObject(dynamic map){
     this._driverName=map['driverName'];
+    this._driverImage=map['driverImage'];
     this._driverID=map['driverID'];
     this._exp=map['exp'];
     this._mobno=map['mobno'];
     this._med=map['medical'];
     this._policeVeri=map['policeVeri'];
+    this._licence=map['licence'];
     this._address=map['address'];
     this._expiry=map['expiry'];
     this._leave=map['leave'];
@@ -359,5 +377,9 @@ class DriverDB{
     this._taxType=map['taxType'];
     this._taxWhy= map['taxWhy'];
     this._taxDate=map['taxDate'];
+  }
+  DriverDB.fromVehicleListMapObject(dynamic map){
+    this._plateno=map['plateno'];
+    this._vehicleID=map['vehicleID'];
   }
 }

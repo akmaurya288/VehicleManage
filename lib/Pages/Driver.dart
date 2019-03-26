@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/DataBase/DriverModel.dart';
 import 'package:flutter_app/Util/DbHelper.dart';
 import 'package:sqflite/sqflite.dart';
+import 'dart:io' as IO;
 import 'package:flutter_app/Screen/AddDriver.dart';
 
 class Driver extends StatefulWidget {
@@ -12,22 +13,25 @@ class Driver extends StatefulWidget {
 class _DriverState extends State<Driver> {
   DatabaseHelper helper = DatabaseHelper();
   List<DriverDB> model;
+  List<DriverDB> vehicles;
+  List<String> _vehicleList=[];
   int count = 0;
-  final _vehicles=["zxcvbn", "asdfgh", "qwerty"];
-  String _vehicle="qwerty";
+  int vcount = 0;
+  String _vehicle;
 
   @override
   Widget build(BuildContext context) {
     if (model == null) {
       model = List<DriverDB>();
       updateListView();
+      updateVehicleList();
     }
     return Scaffold(
         body: Container(
         color: Colors.red[50],
         child: ListView.builder(
         itemCount: count,
-        itemBuilder: (BuildContext context,int index){
+        itemBuilder: (BuildContext context1,int index){
           return GestureDetector(child: Container(
             color: Colors.red[50],
             alignment: Alignment.center,
@@ -41,20 +45,27 @@ class _DriverState extends State<Driver> {
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: Colors.grey,
-                          ),
-                          child: Image.asset("lib/Icon/IconUser.png",scale: 8.5,),
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.all(3),
+                      child: Container(
+                            width: 100,
+                            height: 85,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.0),
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: FileImage(IO.File.fromUri(Uri.file(model[index].driverImage))))
+                            ),
+                          )
                         ),
-                        Divider(height: 14,color: Colors.black,),
+                        Divider(height: 5,color: Colors.black,),
                         Text(model[index].driverName,style: TextStyle(
                           fontSize: 16.0,fontWeight: FontWeight.bold,
                         ),)
                         ],
                       )
-                  )
+                  ),
               ),
               Expanded(
                   flex: 5
@@ -86,7 +97,7 @@ class _DriverState extends State<Driver> {
                               padding: EdgeInsets.only(right: 10),
                               child: Text("Vehicle",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),)),
                           DropdownButton<String>(
-                            items: _vehicles.map((String value){
+                            items: _vehicleList.map((String value){
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(value),
@@ -113,7 +124,7 @@ class _DriverState extends State<Driver> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed:()=>navigateToDetail(DriverDB(0,'','',0,'','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true),
+          onPressed:()=>navigateToDetail(DriverDB(0,'','','',0,'','','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true),
         backgroundColor: Colors.redAccent,
         tooltip: "Add new Todo",
         child: new Icon(Icons.add,color: Colors.white,),
@@ -126,6 +137,7 @@ class _DriverState extends State<Driver> {
     if (result != 0) {
       _showSnackBar(context, 'Note Deleted Successfully');
       updateListView();
+      updateVehicleList();
     }
   }
   void _showSnackBar(BuildContext context, String message) {
@@ -140,7 +152,32 @@ class _DriverState extends State<Driver> {
 
     if (result == true) {
       updateListView();
+      updateVehicleList();
     }
+  }
+
+  void updateVehicleList(){
+    final Future<Database> dbFuture = helper.initializeDatabase();
+    dbFuture.then((database){
+      Future<List<DriverDB>> noteListFuture = helper.getVehicalPlateList();
+      noteListFuture.then((vehicles){
+        setState(() {
+          this.vehicles = vehicles;
+          this.vcount = vehicles.length;
+        });
+      });
+    });
+    if(vehicles!=null){
+    for (int i = 0; i < count; i++) _vehicleList.add(vehicles[i].plateno);
+    _vehicle=vehicles[0].plateno;
+    }
+    else{
+      _vehicleList.add("No Vehicles");
+      _vehicle = "No Vehicles";
+
+    }
+
+    debugPrint(_vehicle);
   }
 
   void updateListView() {

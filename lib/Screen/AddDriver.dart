@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
@@ -20,6 +22,9 @@ class _AddDriverState extends State<AddDriver> {
 
   DatabaseHelper helper= DatabaseHelper();
   File _licenceimage;
+  File _policeverificationimage;
+  File _driverImage;
+  String _drivername;
   String appBarTitle;
   DriverDB driverDB;
   bool edit=false;
@@ -32,6 +37,9 @@ class _AddDriverState extends State<AddDriver> {
   TextEditingController experienceController = TextEditingController();
   TextEditingController medicalController = TextEditingController();
   TextEditingController policeController = TextEditingController();
+  TextEditingController licenceController = TextEditingController();
+  TextEditingController DriverImageController = TextEditingController();
+
 
   @override
   void initState() {
@@ -177,12 +185,29 @@ class _AddDriverState extends State<AddDriver> {
                       ),
                     ),
                   ),
-                  Column(
+                  Row(
                     children: <Widget>[
-                      Center(
-                        child: _licenceimage==null ? Text("Select Image"):Image.file(_licenceimage),
+                      Padding(
+                        padding: EdgeInsets.all(20),
+                        child:Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 1)
+                        ),
+
+                        child:Padding(
+                          padding: EdgeInsets.all(5),
+                          child:SizedBox(
+                          height: 256,
+                          width: 192,
+                          child:  _policeverificationimage==null ? Text("Select Image"):Image.file(_policeverificationimage),
+                        ),
+                        )
                       ),
-                      Row(
+                      ),
+                      Column(
+                        children: <Widget>[
+                          Text ("Police Verification",style: TextStyle(fontSize: 23),),
+                          Row(
                         children: <Widget>[
                           RaisedButton(
                           child: Icon(Icons.image),
@@ -190,13 +215,93 @@ class _AddDriverState extends State<AddDriver> {
                           ),
                           RaisedButton(
                             child: Icon(Icons.camera),
-                            onPressed: getImageCamera,
+                            onPressed:getImageCamera,
                           )
 
                         ],
                       )
+                        ],
+                      ),
                     ],
-                  )
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(20),
+                        child:Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(width: 1)
+                            ),
+
+                            child:Padding(
+                              padding: EdgeInsets.all(5),
+                              child:SizedBox(
+                                height: 256,
+                                width: 192,
+                                child:  _licenceimage==null ? Text("Select Image"):Image.file(_licenceimage),
+                              ),
+                            )
+                        ),
+                      ),
+                      Column(
+                        children: <Widget>[
+                          Text ("Licence",style: TextStyle(fontSize: 23),),
+                          Row(
+                            children: <Widget>[
+                              RaisedButton(
+                                  child: Icon(Icons.image),
+                                  onPressed: getImageGalleryLicence,
+                              ),
+                              RaisedButton(
+                                child: Icon(Icons.camera),
+                                onPressed: getImageCameraLicence,
+                              )
+
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(20),
+                        child:Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(width: 1)
+                            ),
+
+                            child:Padding(
+                              padding: EdgeInsets.all(5),
+                              child:SizedBox(
+                                height: 256,
+                                width: 192,
+                                child:  _driverImage==null ? Text("Select Image"):Image.file(_driverImage),
+                              ),
+                            )
+                        ),
+                      ),
+                      Column(
+                        children: <Widget>[
+                          Text ("Police Verification",style: TextStyle(fontSize: 23),),
+                          Row(
+                            children: <Widget>[
+                              RaisedButton(
+                                  child: Icon(Icons.image),
+                                  onPressed: getImageGalleryDriver
+                              ),
+                              RaisedButton(
+                                child: Icon(Icons.camera),
+                                onPressed:getImageCameraDriver,
+                              )
+
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ],
           ),
           ),
@@ -204,20 +309,45 @@ class _AddDriverState extends State<AddDriver> {
     );
   }
   Future getImageGallery()async{
-    var imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+    File imageFile = await ImagePicker.pickImage(source: ImageSource.gallery,maxHeight: 1024.0,maxWidth: 768.0);
+    setState(() {
+      _policeverificationimage=imageFile;
+    });
+  }
+  Future getImageCamera()async{
+    var imageFile = await ImagePicker.pickImage(source: ImageSource.camera, maxWidth: 1024.0,maxHeight: 768.0);
+    setState(() {
+      _policeverificationimage=imageFile;
+    });
+  }
+  Future getImageGalleryDriver()async{
+    File imageFile = await ImagePicker.pickImage(source: ImageSource.gallery,maxHeight: 1024.0,maxWidth: 768.0);
+    setState(() {
+      _driverImage=imageFile;
+    });
+  }
+  Future getImageCameraDriver()async{
+    var imageFile = await ImagePicker.pickImage(source: ImageSource.camera, maxWidth: 1024.0,maxHeight: 768.0);
+    setState(() {
+      _driverImage=imageFile;
+    });
+  }
+  Future getImageGalleryLicence()async{
+    File imageFile = await ImagePicker.pickImage(source: ImageSource.gallery,maxHeight: 1024.0,maxWidth: 768.0);
     setState(() {
       _licenceimage=imageFile;
     });
   }
-  Future getImageCamera()async{
-    var imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+  Future getImageCameraLicence()async{
+    var imageFile = await ImagePicker.pickImage(source: ImageSource.camera, maxWidth: 1024.0,maxHeight: 768.0);
     setState(() {
       _licenceimage=imageFile;
     });
   }
 
-  void checkEmpty(){
+  Future checkEmpty() async{
     if(driverDB.driverID!=null){
+      _drivername=driverDB.driverName;
       nameController.text = driverDB.driverName;
       addressController.text = driverDB.adders;
       expiryController.text = driverDB.expiry;
@@ -226,7 +356,11 @@ class _AddDriverState extends State<AddDriver> {
       policeController.text = driverDB.policeVeri;
       mobileController.text=driverDB.mobno.toString();
       experienceController.text=driverDB.exp.toString();
-
+      setState(() {
+        _driverImage = File.fromUri(Uri.file(driverDB.driverImage));
+        _licenceimage=File.fromUri(Uri.file(driverDB.licence));
+        _policeverificationimage=File.fromUri(Uri.file(driverDB.policeVeri));
+      });
     }
   }
   void updateTitle(){
@@ -241,7 +375,49 @@ class _AddDriverState extends State<AddDriver> {
   }
   // Save data to database
   void _save() async {
-    moveToLastScreen();
+    String path=(await getApplicationDocumentsDirectory()).path;
+    if(Directory('$path/images/policeverification/').existsSync()==false)
+      new Directory('$path/images/policeverification/').create(recursive: true);
+
+    if(_drivername!=nameController.text&&File('$path/images/policeverification/$_drivername.jpg').existsSync()){
+      File('$path/images/policeverification/$_drivername.jpg').delete();
+    }
+    if(_policeverificationimage!=null) {
+      String imgname = nameController.text;
+      File saveimg1 = await _policeverificationimage.copy(
+          '$path/images/policeverification/$imgname.jpg');
+      driverDB.policeVeri = saveimg1.path;
+      debugPrint(saveimg1.path);
+    }
+
+
+    if(Directory('$path/images/licence/').existsSync()==false)
+      new Directory('$path/images/licence/').create(recursive: true);
+    if(_drivername!=nameController.text&&File('$path/images/licence/$_drivername.jpg').existsSync()){
+      File('$path/images/licence/$_drivername.jpg').delete();
+    }
+    if(_licenceimage!=null) {
+      String imgname = nameController.text;
+      File saveimg2 = await _licenceimage.copy(
+          '$path/images/licence/$imgname.jpg');
+      driverDB.licence = saveimg2.path;
+      debugPrint(saveimg2.path);
+    }
+    ;
+    if(Directory('$path/images/Driver/').existsSync()==false)
+      new Directory('$path/images/Driver/').create(recursive: true);
+
+    if(_drivername!=nameController.text&&File('$path/images/Driver/$_drivername.jpg').existsSync()){
+      File('$path/images/Driver/$_drivername.jpg').delete();
+    }
+    if(_driverImage!=null) {
+      String imgname = nameController.text;
+      File saveimg3 = await _driverImage.copy(
+          '$path/images/Driver/$imgname.jpg');
+      driverDB.driverImage = saveimg3.path;
+      debugPrint(saveimg3.path);
+    }
+
     driverDB.date = DateFormat.yMMMd().format(DateTime.now());
     int result;
     if (driverDB.driverID != null) {  // Case 1: Update operation
@@ -251,13 +427,13 @@ class _AddDriverState extends State<AddDriver> {
       result = await helper.insertDriverNote(driverDB);
     }
 
-    if (result != 0) {  // Success
-      _showAlertDialog('Status', 'Note Saved Successfully');
-    } else {  // Failure
-      _showAlertDialog('Status', 'Problem Saving Note');
-    }
+    moveToLastScreen();
 
-    debugPrint(result.toString());
+    if (result == 0) {
+      _showAlertDialog('Status', 'Problem Saving Note');
+    } else{
+      _showAlertDialog('Status', 'Details Saved Successfully');
+    }
 
   }
 
@@ -266,6 +442,9 @@ class _AddDriverState extends State<AddDriver> {
   }
 
   void _delete() async {
+
+    _policeverificationimage.delete();
+    _licenceimage.delete();
     moveToLastScreen();
 
     // Case 1: If user is trying to delete the NEW NOTE i.e. he has come to
@@ -285,6 +464,14 @@ class _AddDriverState extends State<AddDriver> {
   }
 
   void _showAlertDialog(String title, String message) {
+
+    Fluttertoast.showToast(msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    timeInSecForIos: 1,
+    backgroundColor: Colors.black12,
+    textColor: Colors.white,
+    fontSize: 16.0);
 
     AlertDialog alertDialog = AlertDialog(
       title: Text(title),

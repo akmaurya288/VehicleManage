@@ -46,7 +46,7 @@ class MainPage extends StatelessWidget {
     Tab(icon: Image.asset('lib/Icon/IconInsurance.png', scale: 45),
       text: 'Insurance',),
     Tab(icon: Image.asset('lib/Icon/IconProfit.png', scale: 45),
-    text: 'Profit',),
+    text: 'Income',),
     ]),
     )
         ];
@@ -77,7 +77,7 @@ class MainPage extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => AddDriver(DriverDB(0,'','',0,'','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true)));
+                      builder: (context) => AddDriver(DriverDB(0,'','','',0,'','','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true)));
                 },
               ),
               ListTile(
@@ -89,7 +89,7 @@ class MainPage extends StatelessWidget {
                 onTap: (){
                   Navigator.pop(context);
                   Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => AddVehicle(DriverDB(0,'','',0,'','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true)));
+                      builder: (context) => AddVehicle(DriverDB(0,'','','',0,'','','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true)));
                 },
               ),
             ],

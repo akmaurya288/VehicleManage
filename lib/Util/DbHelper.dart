@@ -12,9 +12,11 @@ class DatabaseHelper {
   String noteTable='note_table';
   String coldId = 'driverID';
   String colname = 'driverName';
+  String coldImage = 'driverImage';
   String coladd= 'address';
   String colvid = 'vehicleID';
   String colPov = 'policeVeri';
+  String collicence = 'licence';
   String colmed = 'medical';
   String colmob = 'mobno';
   String colexp = 'exp';
@@ -68,7 +70,7 @@ class DatabaseHelper {
   Future<Database> initializeDatabase() async {
     // Get the directory path for both Android and iOS to store database.
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'store.db';
+    String path = directory.path + 'VehicleManager.db';
 
     // Open/create the database at a given path
 
@@ -80,8 +82,8 @@ class DatabaseHelper {
 
   void _createDb(Database db, int newVersion) async {
 
-    await db.execute('CREATE TABLE $noteTable($coldId INTEGER PRIMARY KEY, $colvid INTEGER,$colname TEXT, $coladd TEXT,'
-        ' $colexp INTEGER, $colmed TEXT, $colPov TEXT, $colmob INTEGER, $colexpiry TEXT, $colleave TEXT)');
+    await db.execute('CREATE TABLE $noteTable($coldId INTEGER PRIMARY KEY, $colvid INTEGER,$colname TEXT,$coldImage TEXT ,$coladd TEXT,'
+        ' $colexp INTEGER, $colmed TEXT, $colPov TEXT, $collicence TEXT, $colmob INTEGER, $colexpiry TEXT, $colleave TEXT)');
     
     await db.execute('CREATE TABLE $vehicleTable($colvid INTEGER PRIMARY KEY,$vcolplate INTEGER,$vcolavg INTEGER,$vcoldisCovered INTEGER,'
     '$vcolfitCost INTEGER,$vcolfitLast TEXT,$vcolfitNextDate TEXT,$vcolfuelCost INTEGER,$vcolinCost INTEGER,'
@@ -158,6 +160,16 @@ class DatabaseHelper {
     // For loop to create a 'Note List' from a 'Map List'
     for (int i = 0; i < count; i++) {
       noteList.add(DriverDB.fromDriverMapObject(noteMapList[i]));
+    }
+    return noteList;
+  }
+  Future<List<DriverDB>> getVehicalPlateList() async {
+    var vehicalMapList = await getVehiclePlateMapList();
+    int count = vehicalMapList.length;
+    List<DriverDB> noteList = List<DriverDB>();
+    // For loop to create a 'Note List' from a 'Map List'
+    for (int i = 0; i < count; i++) {
+      noteList.add(DriverDB.fromVehicleListMapObject(vehicalMapList[i]));
     }
     return noteList;
   }
