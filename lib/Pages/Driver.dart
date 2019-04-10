@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/DataBase/DriverModel.dart';
+import 'package:flutter_app/DataBase/VehicleModel.dart';
 import 'package:flutter_app/Util/DbHelper.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:io' as IO;
@@ -13,18 +14,15 @@ class Driver extends StatefulWidget {
 class _DriverState extends State<Driver> {
   DatabaseHelper helper = DatabaseHelper();
   List<DriverDB> model;
-  List<DriverDB> vehicles;
-  List<String> _vehicleList=[];
+  List<VehicleDB> vehicleDB;
+  int vcount =0;
   int count = 0;
-  int vcount = 0;
-  String _vehicle;
 
   @override
   Widget build(BuildContext context) {
     if (model == null) {
       model = List<DriverDB>();
       updateListView();
-      updateVehicleList();
     }
     return Scaffold(
         body: Container(
@@ -96,20 +94,6 @@ class _DriverState extends State<Driver> {
                           Padding(
                               padding: EdgeInsets.only(right: 10),
                               child: Text("Vehicle",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),)),
-                          DropdownButton<String>(
-                            items: _vehicleList.map((String value){
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            value: _vehicle,
-                            onChanged: (String value){
-                              setState(() {
-                                _vehicle=value;
-                              });
-                            },
-                          )
                         ],
                       )
                     ],
@@ -124,20 +108,69 @@ class _DriverState extends State<Driver> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed:()=>navigateToDetail(DriverDB(0,'','','',0,'','','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true),
+          onPressed:()=>navigateToDetail(DriverDB(0,'','','',0,'','','',0,'',''),'Add Driver',true),
         backgroundColor: Colors.redAccent,
         tooltip: "Add new Todo",
         child: new Icon(Icons.add,color: Colors.white,),
       ),
     );
   }
+
+  DropdownButton getDropdown(DriverDB model){
+    List<String> _vehicleList=[];
+    int vcount = 0;
+    String _vehicle;
+    final Future<Database> dbFuture = helper.initializeDatabase();
+    dbFuture.then((database){
+      Future<List<VehicleDB>> noteListFuture = helper.getVehicalPlateList();
+      noteListFuture.then((vehicles){
+        setState(() {
+          this.vehicleDB = vehicles;
+          vcount = vehicles.length;
+        });
+      });
+    });
+
+    if(model.vehicleID!=null){
+      _vehicle=vehicleDB[model.vehicleID].plateno;
+    }
+
+    if(vehicleDB!=null){
+      for (int i = 0; i < vcount; i++) _vehicleList.add(vehicleDB[i].plateno);
+      _vehicle=vehicleDB[1].plateno;
+    }else{
+      _vehicleList.add("No Vehicles");
+      _vehicle = "No Vehicles";
+    }
+
+    debugPrint(_vehicle);
+    debugPrint(vcount.toString());
+    return DropdownButton<String>(
+      items: _vehicleList.map((String value){
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      value: _vehicle,
+      onChanged: (String value){
+        setState(() {
+          _vehicle=value;
+        });
+      },
+    );
+}
+
+void getVehicleList(){
+
+}
+
   void _delete(BuildContext context, DriverDB driverDB) async {
 
     int result = await helper.deleteDriverNote(driverDB.driverID);
     if (result != 0) {
       _showSnackBar(context, 'Note Deleted Successfully');
       updateListView();
-      updateVehicleList();
     }
   }
   void _showSnackBar(BuildContext context, String message) {
@@ -152,32 +185,7 @@ class _DriverState extends State<Driver> {
 
     if (result == true) {
       updateListView();
-      updateVehicleList();
     }
-  }
-
-  void updateVehicleList(){
-    final Future<Database> dbFuture = helper.initializeDatabase();
-    dbFuture.then((database){
-      Future<List<DriverDB>> noteListFuture = helper.getVehicalPlateList();
-      noteListFuture.then((vehicles){
-        setState(() {
-          this.vehicles = vehicles;
-          this.vcount = vehicles.length;
-        });
-      });
-    });
-    if(vehicles!=null){
-    for (int i = 0; i < count; i++) _vehicleList.add(vehicles[i].plateno);
-    _vehicle=vehicles[0].plateno;
-    }
-    else{
-      _vehicleList.add("No Vehicles");
-      _vehicle = "No Vehicles";
-
-    }
-
-    debugPrint(_vehicle);
   }
 
   void updateListView() {

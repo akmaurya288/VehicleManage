@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/DataBase/DriverModel.dart';
+import 'package:flutter_app/DataBase/VehicleModel.dart';
 import 'package:flutter_app/Util/DbHelper.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:flutter_app/Screen/AddDriver.dart';
+import 'package:flutter_app/Screen/AddVehicle.dart';
 
 class Vehicle extends StatefulWidget {
   @override
@@ -11,13 +11,13 @@ class Vehicle extends StatefulWidget {
 
 class _VehicleState extends State<Vehicle> {
   DatabaseHelper helper = DatabaseHelper();
-  List<DriverDB> model;
+  List<VehicleDB> model;
   int count = 0;
 
   @override
   Widget build(BuildContext context) {
     if (model == null) {
-      model = List<DriverDB>();
+      model = List<VehicleDB>();
       updateListView();
     }
     return Scaffold(
@@ -47,7 +47,7 @@ class _VehicleState extends State<Vehicle> {
                             child: Image.asset("lib/Icon/IconUser.png",scale: 8.5,),
                           ),
                           Divider(height: 14,color: Colors.black,),
-                          Text(model[index].driverName,style: TextStyle(
+                          Text(model[index].plateno,style: TextStyle(
                             fontSize: 16.0,fontWeight: FontWeight.bold,
                           ),)
                           ],
@@ -69,13 +69,13 @@ class _VehicleState extends State<Vehicle> {
                         Row(
                           children: <Widget>[
                             Text("Phone No.:",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-                            Text(this.model[index].mobno.toString(),style: TextStyle(fontSize: 20),),
+                            Text(this.model[index].modelno,style: TextStyle(fontSize: 20),),
                           ],
                         ),
                         Row(
                           children: <Widget>[
                             Text("Vehicle ID:",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-                            Text(this.model[index].driverID.toString(),style: TextStyle(fontSize: 20),),
+                            Text(this.model[index].vehicleID.toString(),style: TextStyle(fontSize: 20),),
                           ],
                         )
                       ],
@@ -90,16 +90,16 @@ class _VehicleState extends State<Vehicle> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed:()=>navigateToDetail(DriverDB(0,'','','',0,'','','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true),
+        onPressed:()=>navigateToDetail(VehicleDB('', '', '', ''),'Add Driver',true),
         backgroundColor: Colors.redAccent,
         tooltip: "Add new Todo",
         child: new Icon(Icons.add,color: Colors.white,),
       ),
     );
   }
-  void _delete(BuildContext context, DriverDB driverDB) async {
+  void _delete(BuildContext context, VehicleDB vehicleDB) async {
 
-    int result = await helper.deleteDriverNote(driverDB.driverID);
+    int result = await helper.deleteDriverNote(vehicleDB.vehicleID);
     if (result != 0) {
       _showSnackBar(context, 'Note Deleted Successfully');
       updateListView();
@@ -110,9 +110,9 @@ class _VehicleState extends State<Vehicle> {
     final snackBar = SnackBar(duration: Duration(seconds: 1),content: Text(message));
     Scaffold.of(context).showSnackBar(snackBar);
   }
-  void navigateToDetail(DriverDB driverDB, String title, bool edit) async {
+  void navigateToDetail(VehicleDB vehicleDB, String title, bool edit) async {
     bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return AddDriver(driverDB, title, edit);
+      return AddVehicle(vehicleDB, title, edit);
     }));
 
     if (result == true) {
@@ -125,7 +125,7 @@ class _VehicleState extends State<Vehicle> {
     final Future<Database> dbFuture = helper.initializeDatabase();
     dbFuture.then((database) {
 
-      Future<List<DriverDB>> noteListFuture = helper.getNoteList();
+      Future<List<VehicleDB>> noteListFuture = helper.getVehicleList();
       noteListFuture.then((model) {
         setState(() {
           this.model = model;

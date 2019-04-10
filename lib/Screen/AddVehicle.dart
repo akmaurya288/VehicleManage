@@ -1,54 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:flutter_app/DataBase/DriverModel.dart';
+import 'package:flutter_app/DataBase/VehicleModel.dart';
 import 'package:flutter_app/Util/DbHelper.dart';
 
 class AddVehicle extends StatefulWidget {
   final String appBarTitle;
-  final DriverDB driverDB;
+  final VehicleDB vehicleDB;
   final bool edit;
-  AddVehicle(this.driverDB,this.appBarTitle,this.edit);
+  AddVehicle(this.vehicleDB,this.appBarTitle,this.edit);
 
   @override
-  _AddVehicleState createState() => _AddVehicleState(this.driverDB, this.appBarTitle, this.edit);
+  _AddVehicleState createState() => _AddVehicleState(this.vehicleDB, this.appBarTitle, this.edit);
 }
 
 class _AddVehicleState extends State<AddVehicle> {
 
   DatabaseHelper helper= DatabaseHelper();
+  File _carimage;
+  String _plateno;
   String appBarTitle;
-  DriverDB driverDB;
+  VehicleDB vehicleDB;
   bool edit=false;
+  _AddVehicleState(this.vehicleDB, this.appBarTitle, this.edit);
 
-  _AddVehicleState(this.driverDB, this.appBarTitle, this.edit);
-
-  TextEditingController plateController = TextEditingController();
+  TextEditingController plateNoController = TextEditingController();
+  TextEditingController modelController = TextEditingController();
   TextEditingController typeController = TextEditingController();
-  TextEditingController distanceCoveredController = TextEditingController();
-  TextEditingController averageController = TextEditingController();
-  TextEditingController fuelCostController = TextEditingController();
-  TextEditingController insuranceCostController = TextEditingController();
-  TextEditingController insuranceDueDateController = TextEditingController();
-  TextEditingController insuranceCompanyController = TextEditingController();
-  TextEditingController serviceTypeController = TextEditingController();
-  TextEditingController serviceDateController = TextEditingController();
-  TextEditingController serviceCostController = TextEditingController();
-  TextEditingController serviceWhatController = TextEditingController();
-  TextEditingController serviceWhereController = TextEditingController();
-  TextEditingController fitnesslastController = TextEditingController();
-  TextEditingController fitnessNextDateController = TextEditingController();
-  TextEditingController fitnessCostController = TextEditingController();
-  TextEditingController pollutionLastController = TextEditingController();
-  TextEditingController pollutionNextDateController = TextEditingController();
-  TextEditingController pollutionCostController = TextEditingController();
-  TextEditingController taxTypeController = TextEditingController();
-  TextEditingController taxCostController = TextEditingController();
-  TextEditingController taxDateController = TextEditingController();
-  TextEditingController taxNextDateController = TextEditingController();
-  TextEditingController taxWhyController = TextEditingController();
-  TextEditingController lastFillDateController = TextEditingController();
+  TextEditingController carimageController = TextEditingController();
+
 
   @override
   void initState() {
@@ -90,13 +75,13 @@ class _AddVehicleState extends State<AddVehicle> {
                   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
                   child: TextField(
                     enabled: edit,
-                    controller: typeController,
+                    controller: plateNoController,
                     onChanged: (value) {
                       debugPrint('Something changed in Title Text Field');
                       updateTitle();
                     },
                     decoration: InputDecoration(
-                        labelText: 'Vehicle Type',
+                        labelText: 'Driver Name',
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0)
                         )
@@ -107,7 +92,7 @@ class _AddVehicleState extends State<AddVehicle> {
                   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
                   child: TextField(
                     enabled: edit,
-                    controller: plateController,
+                    controller: modelController,
                     onChanged: (value) {
                       debugPrint('Something changed in Title Text Field' + value);
                       setState(() {
@@ -115,51 +100,139 @@ class _AddVehicleState extends State<AddVehicle> {
                       });
                     },
                     decoration: InputDecoration(
-                        labelText: 'Vehicle Model',
+                        labelText: 'Contact Mobile Number',
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0)
                         )
                     ),
                   ),
                 ),
+                Padding(
+                  padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                  child: TextField(
+                    enabled: edit,
+                    controller: typeController,
+                    onChanged: (value) {
+                      debugPrint('Something changed in Title Text Field');
+                      updateTitle();
+                    },
+                    decoration: InputDecoration(
+                        labelText: 'Address',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0)
+                        )
+                    ),
+                  ),
+                ),
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child:Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 1)
+                          ),
 
+                          child:Padding(
+                            padding: EdgeInsets.all(5),
+                            child:SizedBox(
+                              height: 256,
+                              width: 192,
+                              child:  _carimage==null ? Text("Select Image"):Image.file(_carimage),
+                            ),
+                          )
+                      ),
+                    ),
+                    Column(
+                      children: <Widget>[
+                        Text ("Police Verification",style: TextStyle(fontSize: 23),),
+                        Row(
+                          children: <Widget>[
+                            RaisedButton(
+                                child: Icon(Icons.image),
+                                onPressed: getImageGallery
+                            ),
+                            RaisedButton(
+                              child: Icon(Icons.camera),
+                              onPressed:getImageCamera,
+                            )
+
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         )
     );
   }
-  void checkEmpty(){
-    if(driverDB.driverID!=null){
-      plateController.text = driverDB.plateno;
-      typeController.text = driverDB.adders;
+  Future getImageGallery()async{
+    File imageFile = await ImagePicker.pickImage(source: ImageSource.gallery,maxHeight: 1024.0,maxWidth: 768.0);
+    setState(() {
+      _carimage=imageFile;
+    });
+  }
+  Future getImageCamera()async{
+    var imageFile = await ImagePicker.pickImage(source: ImageSource.camera, maxWidth: 1024.0,maxHeight: 768.0);
+    setState(() {
+      _carimage=imageFile;
+    });
+  }
 
+  Future checkEmpty() async{
+    if(vehicleDB.plateno!=null){
+      _plateno=vehicleDB.plateno;
+
+      plateNoController.text=vehicleDB.plateno;
+      modelController.text=vehicleDB.modelno;
+      carimageController.text=vehicleDB.carimage;
+      typeController.text=vehicleDB.type;
+
+      setState(() {
+        _carimage = File.fromUri(Uri.file(vehicleDB.carimage));
+      });
     }
   }
   void updateTitle(){
-    driverDB.driverName = plateController.text;
-    driverDB.adders = typeController.text;
-
+    vehicleDB.plateno=plateNoController.text;
+    vehicleDB.modelno=modelController.text;
+    vehicleDB.type=typeController.text;
   }
   // Save data to database
   void _save() async {
-    moveToLastScreen();
-    driverDB.date = DateFormat.yMMMd().format(DateTime.now());
+    String path=(await getApplicationDocumentsDirectory()).path;
+    if(Directory('$path/images/vehicle/').existsSync()==false)
+      new Directory('$path/images/vehicle/').create(recursive: true);
+
+    if(_carimage!=plateNoController.text&&File('$path/images/vehicle/$_plateno.jpg').existsSync()){
+      File('$path/images/vehicle/$_plateno.jpg').delete();
+    }
+    if(_carimage!=null) {
+      String imgname = plateNoController.text;
+      File saveimg1 = await _carimage.copy(
+          '$path/images/vehicle/$imgname.jpg');
+      vehicleDB.carimage = saveimg1.path;
+      debugPrint(saveimg1.path);
+    }
+
     int result;
-    if (driverDB.vehicleID != null) {  // Case 1: Update operation
-      debugPrint(driverDB.vehicleID.toString());
-      result = await helper.updatevehicleNote(driverDB);
+    if (vehicleDB.vehicleID != null) {  // Case 1: Update operation
+      debugPrint(vehicleDB.vehicleID.toString());
+      result = await helper.updatevehicleNote(vehicleDB);
     } else { // Case 2: Insert Operation
-      result = await helper.insertvehicleNote(driverDB);
+      result = await helper.insertvehicleNote(vehicleDB);
     }
 
-    if (result != 0) {  // Success
-      _showAlertDialog('Status', 'Note Saved Successfully');
-    } else {  // Failure
+    moveToLastScreen();
+
+    if (result == 0) {
       _showAlertDialog('Status', 'Problem Saving Note');
+    } else{
+      _showAlertDialog('Status', 'Details Saved Successfully');
     }
-
-    debugPrint(result.toString());
 
   }
 
@@ -168,17 +241,20 @@ class _AddVehicleState extends State<AddVehicle> {
   }
 
   void _delete() async {
+
+    if(_carimage!=null)
+    _carimage.delete();
     moveToLastScreen();
 
     // Case 1: If user is trying to delete the NEW NOTE i.e. he has come to
     // the detail page by pressing the FAB of NoteList page.
-    if (driverDB.vehicleID== null) {
+    if (vehicleDB.vehicleID == null) {
       _showAlertDialog('Status', 'No Note was deleted');
       return;
     }
 
     // Case 2: User is trying to delete the old note that already has a valid ID.
-    int result = await helper.deletevehicalNote(driverDB.vehicleID);
+    int result = await helper.deletevehicalNote(vehicleDB.vehicleID);
     if (result != 0) {
       _showAlertDialog('Status', 'Note Deleted Successfully');
     } else {
@@ -187,6 +263,14 @@ class _AddVehicleState extends State<AddVehicle> {
   }
 
   void _showAlertDialog(String title, String message) {
+
+    Fluttertoast.showToast(msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.black12,
+        textColor: Colors.white,
+        fontSize: 16.0);
 
     AlertDialog alertDialog = AlertDialog(
       title: Text(title),

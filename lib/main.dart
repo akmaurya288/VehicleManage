@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'Pages/Home.dart';
 import 'Pages/Driver.dart';
 import 'Pages/Profit.dart';
-import 'Pages/Insurance.dart';
+import 'Pages/Paper.dart';
 import 'Screen/backup.dart';
 import 'Screen/settings.dart';
 import 'Screen/AddVehicle.dart';
 import 'Screen/AddDriver.dart';
 import 'Pages/Vehicle.dart';
 import 'package:flutter_app/DataBase/DriverModel.dart';
+import 'package:flutter_app/DataBase/VehicleModel.dart';
 void main()=> runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -44,14 +45,14 @@ class MainPage extends StatelessWidget {
     Tab(icon: Image.asset('lib/Icon/IconUser.png', scale: 45),
     text: 'Driver',),
     Tab(icon: Image.asset('lib/Icon/IconInsurance.png', scale: 45),
-      text: 'Insurance',),
+      text: 'Paper',),
     Tab(icon: Image.asset('lib/Icon/IconProfit.png', scale: 45),
     text: 'Income',),
     ]),
     )
         ];
     }, body: TabBarView(
-        children: [Home(), Vehicle(), Driver(),TodoList(), Profit()],
+        children: [Home(), Vehicle(), Driver(),Paper(), Profit()],
       ),
       ),
       drawer: Drawer(
@@ -77,7 +78,7 @@ class MainPage extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => AddDriver(DriverDB(0,'','','',0,'','','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true)));
+                      builder: (context) => AddDriver(DriverDB(0,'','','',0,'','','',0,'',''),'Add Driver',true)));
                 },
               ),
               ListTile(
@@ -89,7 +90,7 @@ class MainPage extends StatelessWidget {
                 onTap: (){
                   Navigator.pop(context);
                   Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => AddVehicle(DriverDB(0,'','','',0,'','','',0,'','','','','',0,'',0,0,0,'','', '',0, '', '', '', 0, '', '', 0, '', '', 0, '', '', '', ''),'Add Driver',true)));
+                      builder: (context) => AddVehicle(VehicleDB('', '', '', ''),'Add Vehicle',true)));
                 },
               ),
             ],

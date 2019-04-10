@@ -2,20 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sparkline/flutter_sparkline.dart';
 
-class Chips extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-        color: Colors.white,
-        elevation: 2.5,
-        shadowColor: Colors.black,
-        borderRadius: BorderRadius.circular(6.0),
-    );
-  }
-}
-
-
 class Home extends StatelessWidget {
   final data=[0.0,1.0,1.5,2.0,0.0,0.0,-0.5,-1.0,-0.5,0.0,0.0,];
   @override
@@ -65,3 +51,16 @@ class Home extends StatelessWidget {
       ),    );
   }
 }
+class Chips extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      elevation: 2.5,
+      shadowColor: Colors.black,
+      borderRadius: BorderRadius.circular(6.0),
+    );
+  }
+}
+
