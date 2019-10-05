@@ -1,6 +1,7 @@
 # flutter_app
 
-A new Flutter application.
+
+This app will be used by cab owners to manage their vehicles and drivers. Manage papers like licence, Insurence, pollution and fitness, Servicing, income generated etc. It also manages in allotting vehicles to drivers and their leaves.
 
 ## Getting Started
 
